@@ -1,0 +1,242 @@
+# METSI Platform — Product Viewpoint
+
+## Product Vision
+
+> **Make water loss visible, recoverable, and investable — turning every drop of data into a decision, a revenue stream, or a public good.**
+
+METSI is not a leak detection tool. It is not a dispatch system. It is not a billing engine.
+
+METSI is a **water intelligence operating system** — a multi-sided platform that connects physical infrastructure (sensors, pipes, valves) with operational workflows (detect, dispatch, repair, verify) and financial markets (investors, contractors, municipalities). The output is **verified water savings**, and the by-product is an **exhaustive data asset** that grows more valuable with every leak repaired, every sensor reading recorded, and every revenue rand distributed.
+
+---
+
+## Product Positioning
+
+### Current State (MVP)
+
+The platform today is a **transactional backbone** — it digitises the end-to-end leak lifecycle:
+
+- **Ingest** telemetry → **Detect** anomalies → **Score** leaks → **Dispatch** crews → **Verify** repairs → **Distribute** revenue
+- 13 microservices, 6 DMN decision tables, 23 BPMN processes, 20 Kafka topics
+- 34K+ time-series readings, 200+ seed records, 8 spatial tables across 6 DMA zones
+- Multi-tenant by design (`X-Tenant-ID`), JWT auth, role-based dashboards for 5 stakeholder personas
+
+**What it does well:** orchestrates a complex multi-stakeholder process from end to end with an immutable audit trail and transparent revenue flows.
+
+**What it doesn't do yet:** turn the data flowing through that backbone into **insight, prediction, benchmarking, or new revenue**.
+
+### Future State (Data Products Layer)
+
+The platform evolves from **transactional backbone** to **intelligence layer** — where every operational process generates a reusable data product:
+
+> **Phase 1 (MVP):** We connect the pipe. Data flows end-to-end.
+>
+> **Phase 2 (Analytics):** We surface what the data means. Dashboards, trends, alerts.
+>
+> **Phase 3 (Prediction):** We forecast what happens next. ML models, risk scores, recommendations.
+>
+> **Phase 4 (Marketplace):** We sell the insight. Data APIs, benchmarks, ESG reports, white-labelled analytics.
+
+This document captures the full product viewpoint — what METSI is, who it serves, how it creates value, and what it will become.
+
+---
+
+## Stakeholder Value Map
+
+### Municipalities
+| Need | Current (MVP) | Enhanced (with Data Products) |
+|---|---|---|
+| Reduce NRW | Detection → Dispatch → Repair | + **DMA Zone Performance Dashboard** with trended NRW%, pressure, flow, leak density |
+| Regulatory compliance | Manual ESG reporting | + **SDG 6 Automated Reporting** — PDF/CSV export pre-formatted for DWS submissions |
+| Prioritise pipe replacements | None | + **Leak Risk Prediction** — ML model scoring pipes by failure probability |
+| Compare performance | None | + **Municipality Benchmarking** — anonymised peer comparison ("your NRW is 38%, peers average 31%") |
+| Operate efficiently | Basic job tracking | + **Crew Scorecard** — SLA compliance %, avg response time, repair success rate by crew |
+| Plan capital budget | Capital eligibility rules | + **Capital Planning Dashboard** — pipeline of fundable projects, pot utilisation, funding gap analysis |
+
+### Contractors
+| Need | Current (MVP) | Enhanced (with Data Products) |
+|---|---|---|
+| Steady work pipeline | Job dispatch | + **Job Forecasting** — predicted leak volume by zone/season to plan crew capacity |
+| Build reputation | Review ratings | + **Contractor Scorecard** — verified performance metrics: SLA %, first-time fix rate, avg repair time |
+| Differentiate | None | + **Specialty Certification Analytics** — data-backed badges ("fastest emergency response in Western Cape") |
+| Price competitively | None | + **Market Pricing Benchmarks** — anonymised rate comparisons by region, job type |
+
+### Investors / DFIs
+| Need | Current (MVP) | Enhanced (with Data Products) |
+|---|---|---|
+| Deploy capital confidently | Capital eligibility DMN | + **Portfolio ROI Analytics** — NPV, IRR, payback by zone; actual vs projected |
+| Verify returns | Revenue distribution | + **Revenue Waterfall Dashboard** — R per zone: recovered volume → tariff → gross → stakeholder splits |
+| Report impact | Manual ESG compilation | + **Automated Impact Report** — CO₂ reduction, water saved, households served, SDG alignment, audit-referenced |
+| Compare opportunities | None | + **Industry NRW Index** — quarterly trend report across all tenants |
+| Manage risk | None | + **Seasonal NRW Forecasting** — expected loss by season; anomaly detection for unexpected spikes |
+
+### Auditors / Regulators
+| Need | Current (MVP) | Enhanced (with Data Products) |
+|---|---|---|
+| Verify integrity | Immutable audit log | + **Audit-Ready Compliance Dashboard** — real-time compliance checks, filterable by entity/period |
+| Cross-check records | Manual replay by process_id | + **Event Correlation Engine** — links audit events across services for end-to-end traceability |
+| Generate reports | None | + **Regulatory Filing Export** — pre-formatted PDF/CSV for DWS, SALGA submissions |
+| Monitor proactively | None | + **SLA Compliance Tracker** — % on-time, avg breach severity, trend by zone/crew/time-of-day |
+
+### Platform Owner (METSI)
+| Need | Current (MVP) | Enhanced (with Data Products) |
+|---|---|---|
+| Revenue growth | Subscriptions + commissions | + **Data Product Revenue** — reports (R25K), benchmarks (R10K/mo), API access (R5K/mo), white-label analytics |
+| Stickiness | Operational dependency | + **Switching costs** increase as historical data accumulates — benchmarking, trends, ML models are irreplaceable |
+| Network effects | Marketplace (contractors ↔ municipalities) | + **Data network effects** — more tenants → better benchmarks → more accurate ML models → more value → more tenants |
+| Product differentiation | End-to-end workflow | + **Analytics moat** — no competitor has 12 months of cross-tenant NRW data, leak patterns, and pricing benchmarks |
+
+---
+
+## Data Product Portfolio
+
+### Tier 1 — Operational Analytics (Build immediately, low effort, high value)
+
+These products require **no ML, no new infrastructure** — just SQL aggregations + a charting library on the frontend.
+
+| Product | Data Sources | Output | Delivery |
+|---|---|---|---|
+| **DMA Zone Performance** | telemetry.sensor_readings, detection.detected_leaks, twin.digital_twin_states | NRW%, avg pressure, avg flow, leak density, trend arrows per zone | Dashboard (Control Tower + Municipality) |
+| **Crew Scorecard** | dispatch.jobs, mv.verification_records | SLA compliance %, avg response time, jobs/crew/month, first-time fix rate | Dashboard (Contractor + Dispatch) |
+| **Sensor Health Monitor** | telemetry.sensor_heartbeats, telemetry.sensor_readings | Online %, data gap duration, last reading delta | Dashboard (Admin + Control Tower) |
+| **SLA Compliance Tracker** | dispatch.jobs (eta vs sla_minutes), audit.audit_logs (SLA_VIOLATED) | % on-time, avg breach severity, trend by zone/crew/time-of-day | Dashboard (Municipality + Auditor) |
+| **Leak Hotspot Map** | gis.mv_leaks, detection.detected_leaks, gis.mv_pipelines | Density heatmap, recurring leak zones, pipe material failure correlation | Map overlay (Control Tower + Leak Intelligence) |
+| **Revenue Waterfall** | revenue.revenue_records, revenue.tariffs | Trended revenue per zone: volume → tariff → gross → stakeholder splits | Dashboard (Revenue + Investor) |
+| **Asset Lifecycle Analytics** | gis.network_assets, gis mv_pipelines/valves/hydrants | Condition distribution, age profile, maintenance frequency by asset type | Dashboard (Asset Lifecycle) |
+
+### Tier 2 — Predictive & ML Products (Build medium-term, medium effort, high differentiation)
+
+These require a **data science workbench** or notebook-to-production pipeline.
+
+| Product | Approach | Training Data | Output |
+|---|---|---|---|
+| **Leak Risk Prediction** | Gradient-boosted model scoring pipes by failure probability | Pipe age, material, condition_score, historical leak density, pressure variance, soil type | Per-pipe risk score (0–100), zone-level risk heatmap |
+| **Seasonal NRW Forecasting** | Time-series model (Prophet / ARIMA) per DMA zone | 12+ months of sensor_readings, weather metadata, calendar features | Expected NRW% by month, anomaly flags for unexpected spikes |
+| **Dynamic Leak Thresholds** | Unsupervised anomaly detection (isolation forest / autoencoder) learning per-sensor baselines | 3+ months of telemetry per sensor | Adaptive thresholds that reduce false positives vs static DMN rules |
+| **Optimal Crew Dispatch** | Route optimisation + ETA prediction model | Crew GPS history, traffic data, job locations, skill matrix, repair time by type | Suggested crew assignment, predicted ETA, route |
+| **Verification Confidence Prediction** | Regression model predicting verification success | before_flow, after_flow, confidence, crew_id, zone, season, repair_type | Predicted verification confidence before crew arrives |
+| **Revenue Recovery Forecast** | Time-series + regression model | Recovered_volume history, tariff changes, seasonal patterns, active leaks | Forecast revenue by zone/month with confidence intervals |
+
+### Tier 3 — Cross-Tenant & Network Effect Products (Build long-term, requires multiple tenants)
+
+These become **more accurate and more valuable** as more municipalities join the platform.
+
+| Product | Data Sources | Output | Monetisation |
+|---|---|---|---|
+| **Municipality Benchmarking** | Aggregated + anonymised across all tenants | "Your NRW is 38% — peers average 31% (top quartile: 22%)" | Included in Professional/Enterprise; upsell for detailed |
+| **Industry NRW Index** | All tenants, time-weighted | Quarterly report: NRW trends, regional breakdown, best practices | R25,000/report (existing Data Export line item) |
+| **Contractor Pricing Benchmarks** | marketplace + dispatch | Anonymised rate comparisons by region, job type, urgency | Included in marketplace subscription |
+| **Water Loss Intelligence API** | Aggregated + anonymised leak data | Leak probability by region, pipe material, season | R5,000/mo API access tier |
+| **Infrastructure Planning Dataset** | gis + twin + telemetry | Condition curves, replacement timing recommendations, CAPEX optimisation | R25,000+ per report |
+| **SDG 6 National Dashboard** | All municipalities' sdg6 indicators | National progress view, gap analysis, funding needs by province | Free (public good) + white-label for DFIs |
+
+### Tier 4 — External / Data Monetisation Products (Build long-term, requires scale)
+
+| Product | Description | Customer | Revenue Model |
+|---|---|---|---|
+| **Vendor Lead Scoring** | "Top 10 contractors in Western Cape by repair success rate" | Contractors (premium listing) | R1,000/mo or pay-per-lead |
+| **Water Infrastructure Risk Atlas** | Heatmap of pipe failure risk by region for infrastructure planning | Consulting engineers, municipalities | R50,000+ per project |
+| **Compliance-as-a-Service** | Automated DWS/SALGA regulatory filing for water services authorities | Municipalities | R5,000/mo add-on |
+| **White-Label Analytics Portal** | Full analytics suite branded as municipality's own "Smart Water Dashboard" | Tier 1–2 municipalities | R25,000/mo |
+| **ESG Data Feed** | API feed of verified water savings, CO₂ reduction, SDG contribution | DFIs, impact funds, auditors | R10,000/mo |
+
+---
+
+## Product-Market Fit by Tier
+
+```
+                    HIGH
+                     ▲
+                     │
+     Tier 1          │          Tier 4
+  Operational        │      External/Monetisation
+  Analytics          │
+  (Build now)        │      (Build at scale)
+                     │
+  VALUE TO           │
+  CUSTOMER           │
+                     │
+     Tier 2          │          Tier 3
+  Predictive/ML      │      Cross-Tenant/Network
+  (Build medium)     │      (Build with scale)
+                     │
+                     └──────────────────────────────►
+                         EFFORT TO BUILD
+
+```
+
+**Immediate priority (Tier 1):** Replace mock KPIs with real SQL aggregations on telemetry, detection, dispatch, and revenue tables. Add a charting library. This alone transforms the demo into a functional product and validates every data pipeline.
+
+---
+
+## Revenue Impact of Data Products
+
+| Product | Model | Est. Monthly Revenue (at 10 municipalities) |
+|---|---|---|
+| Existing subscriptions | R0–R49,999/mo per municipality | R150,000–R500,000 |
+| Data Export / ESG Report | R25,000/report × 4/yr | R83,000/mo avg |
+| Compliance-as-a-Service | R5,000/mo × 10 municipalities | R50,000/mo |
+| White-Label Analytics | R25,000/mo × 3 Tier-1/2 municipalities | R75,000/mo |
+| Water Loss Intelligence API | R5,000/mo × 5 subscribers | R25,000/mo |
+| Industry NRW Index | R25,000/quarter × 10 subscribers | R83,000/mo avg |
+| Vendor Lead Scoring | R1,000/mo × 20 contractors | R20,000/mo |
+
+**Total recurring data product revenue potential: ~R336,000/mo** — a **58% increase** on the current monthly burn of R578,000 — without acquiring a single new municipality.
+
+---
+
+## Key Metrics (Updated for Data Products)
+
+| Metric | Current Target | Updated Target (with Data Products) |
+|---|---|---|
+| Monthly Recurring Revenue | R500K+ (break-even) | R900K+ (profitable) |
+| Data product revenue % | 0% | >30% of total revenue |
+| Revenue per municipality/mo | R14,999 (avg) | R25,000+ (with analytics add-ons) |
+| LTV / CAC | 21.6× | 35× (higher stickiness from historical data) |
+| NPS | >50 | >60 (benchmarks + insights increase perceived value) |
+| Data products shipped | 0 | 5+ (Tier 1 within 3 months) |
+
+---
+
+## Technical Implications
+
+To deliver the data product portfolio, the platform needs:
+
+1. **Charting library** — Recharts, D3, or Apache ECharts (currently none)
+2. **Analytics microservice** or **read-replica database** — separate OLAP concerns from OLTP to avoid performance impact
+3. **Scheduled report engine** — cron-based or Celery-based PDF/CSV generation (can use existing Python stack)
+4. **Materialised views** in PostgreSQL for common aggregations (daily zone stats, crew performance, revenue trends)
+5. **Time-series rollups** in TimescaleDB — continuous aggregates for hourly/daily/weekly telemetry views (native TimescaleDB feature, currently unused)
+6. **Data export endpoints** — CSV/JSON/PDF for every table and aggregation
+7. **Clickable KPIs** — drill-down from summary cards to detail views (requires routing + state management)
+8. **Anonymisation layer** for cross-tenant benchmarks (strip tenant_id, normalise by zone size/population)
+
+**None of this requires new infrastructure.** PostgreSQL, TimescaleDB, and the existing Python/FastAPI stack can handle all Tier 1 products. The existing Kafka event bus already carries every data point needed.
+
+---
+
+## Strategic Narrative
+
+### What METSI is today:
+A **leak-to-revenue orchestration platform** that connects sensors, crews, contractors, municipalities, investors, and auditors in a single operational workflow.
+
+### What METSI will become:
+A **water intelligence utility** — the definitive source of water network performance data for Africa. Every leak repaired improves the model. Every municipality onboarded sharpens the benchmarks. Every year of telemetry increases the accuracy of predictions and the depth of insight.
+
+The data products are not an add-on. They are the **durable competitive advantage** — the moat that turns a well-executed operational platform into an indispensable infrastructure asset.
+
+---
+
+## Appendix — Existing Product Assets (From service_blueprint.md & business_model_canvas.md)
+
+| Asset | Location |
+|---|---|
+| Service Blueprint — Leak-to-Revenue lifecycle | `docs/service_blueprint.md` |
+| Business Model Canvas | `docs/business_model_canvas.md` |
+| Stakeholder Journeys (5 personas) | `docs/service_blueprint.md` (lines 100–173) |
+| Revenue Streams (10 streams) | `docs/business_model_canvas.md` (lines 85–98) |
+| Cost Structure (R578K/mo burn) | `docs/business_model_canvas.md` (lines 100–132) |
+| Unit Economics (per DMA zone) | `docs/business_model_canvas.md` (lines 134–148) |
+| Competitive Advantages (7) | `docs/business_model_canvas.md` (lines 150–157) |
+| Architecture Diagram | `docs/architecture.md` |
+| Epics & User Stories (14 epics, 82 stories) | `docs/epics_stories_journeys.md` |

@@ -24,3 +24,4 @@ now push code to github repo
 git push -u origin <branch name>
 git push -u origin master
 
+git is a very convenient version control system.
